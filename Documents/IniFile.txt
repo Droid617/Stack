@@ -1,0 +1,13 @@
+[general]
+windowWidth=1080
+windowHeight
+fullscreen=Yes
+
+[player]
+x=100
+y=200
+name=Ivan Petrov Vasilievich
+bool=true
+
+[newSection]
+value=137
