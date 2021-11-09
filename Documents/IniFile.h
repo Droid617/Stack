@@ -14,7 +14,7 @@ public:
 
 	void Save();//for adding in map	
 
-	std::string Read(std::string section, std::string key, std::string defaultValue = " ");//output key one
+	template<typename T> T Read(std::string section, std::string key, T defaultValue = T{});//output key one
 
 	template<typename T> void Write(std::string section, std::string key, T value);//write second value
 

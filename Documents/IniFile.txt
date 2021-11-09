@@ -1,13 +1,13 @@
 [general]
-windowWidth=1080
-windowHeight
 fullscreen=Yes
-
-[player]
-x=100
-y=
-name=Ivan Petrov Vasilievich
-bool=true
+windowWidth=1080
 
 [newSection]
 value=137
+
+[player]
+bool=true
+name=Ivan Petrov Vasilievich
+x=666
+y=
+

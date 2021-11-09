@@ -3,66 +3,86 @@
 #include<map>
 #include<string>
 #include<fstream>
+#include<sstream>
 #include<cstdlib>
 #include"IniFile.h"
 
 void IniFile::Save() {
+	std::fstream fs(path, std::fstream::out | std::fstream::trunc);
+	if(fs.is_open()){
+		std::map<std::string, std::map<std::string, std::string>>:: iterator itSect;
+		std::map<std::string, std::string>:: iterator itSectOfKey;
+		
+		for(itSect = data.begin();itSect != data.end();itSect++){
+			fs<<"["<<itSect->first<<"]\n";
+			for(itSectOfKey = data[itSect->first].begin();itSectOfKey != data[itSect->first].end();itSectOfKey++){
+				fs<<itSectOfKey->first<<"="<<itSectOfKey->second<<"\n";
+			}
+			fs<<"\n";
+		}
+
+		fs.close();
+	}
+	
+}
+
+template<typename T> T IniFile::Read(std::string section, std::string key, T defaultValue){
 
 	std::string line;
-	std::string sect;
-	std::string keyOfSect;
-	std::string keyOfSectValue;
-	std::ifstream inf(path);
-	
-	if(inf.is_open()){
-		while(getline(inf, line)){
-			int pointOne = 0;
-			int pointTwo = 0;
-			for(int i = 0;i < line.size();i++){
-				if(line[i] == '['){
-					pointOne = i;
-					continue;
-				}
-				if(line[i] == ']'){
-					pointTwo = i;
-					break;
-				}
-				if(line[i] == '='){
-					keyOfSect = line.substr(pointOne, i);
-					keyOfSectValue = line.substr(i + 1, line.size() - 1);
-					data[sect][keyOfSect] = keyOfSectValue;
-					break;
-				}
-				
-			}
-			if((pointOne == 0) && (pointTwo == 0)){
-				continue;
-			}
+        std::string sect;
+        std::string keyOfSect;
+        std::string keyOfSectValue;
+        std::ifstream inf(path);
+	T result = defaultValue;
 
-			if(line[pointOne] == '['){
-				sect = line.substr(pointOne + 1, (pointTwo - pointOne - 1));
-				data[sect];
-			}
-		}
-		inf.close();
-	}
+        if(inf.is_open()){
+                while(getline(inf, line)){
+                        int pointOne = 0;
+                        int pointTwo = 0;
+                        for(int i = 0;i < line.size();i++){
+                                if(line[i] == '['){
+                                        pointOne = i;
+                                        continue;
+                                }
+                                if(line[i] == ']'){
+                                        pointTwo = i;
+                                        break;
+                                }
+                                if(line[i] == '='){
+                                        keyOfSect = line.substr(pointOne, i);
+                                        keyOfSectValue = line.substr(i + 1, line.size() - 1);
+                                        data[sect][keyOfSect] = keyOfSectValue;
+					if((sect == section) && (key == keyOfSect)){
+						std::stringstream stream(keyOfSectValue);
+						stream>>result;
+					}
+                                        break;
+                                }
 
-}
+                        }
+                        if((pointOne == 0) && (pointTwo == 0)){
+                                continue;
+                        }
 
-std::string IniFile::Read(std::string section, std::string key, std::string defaultValue){//Здесь использую string, так как , по сути, все в файле - это строки
-										//А при получении строки данных можно проверить через typeid  и явно привести.
-	if(data[section][key] == ""){
-		return defaultValue;
-	}
-	else{
-		return data[section][key];
-	}
+                        if(line[pointOne] == '['){
+                                sect = line.substr(pointOne + 1, (pointTwo - pointOne - 1));
+                                data[sect];
+                        }
+                }
+                inf.close();
+        }
+	return result;
 				
 }
 
+template std::string IniFile::Read<std::string>(std::string section, std::string key, std::string defaultValue = " ");
+template bool IniFile::Read<bool>(std::string section, std::string key, bool defaultValue = false);
+template int IniFile::Read<int>(std::string section, std::string key, int defaultValue = 0);
+template float IniFile::Read<float>(std::string section, std::string key, float defaultValue = 0.0f);
 
 template<typename T> void IniFile:: Write(std::string section, std::string key, T value){
 		data[section][key] = value;
+		Save();
 }
 
 template void IniFile:: Write<std::string>(std::string section, std::string key, std::string value);
@@ -82,9 +102,14 @@ bool IniFile::SectionExists(std::string section){
 
 bool IniFile::KeyExists(std::string section, std::string key){
 		
-	std::map<std::string, std::string>:: iterator it;
-        it = data[section].find(key);
-        return (it == data[section].end()) ? false : true;
+	if(SectionExists(section)){
+		std::map<std::string, std::string>:: iterator it;
+        	it = data[section].find(key);
+        	return (it == data[section].end()) ? false : true;
+	}
+	else{
+		return false;
+	}
 			
 }
 

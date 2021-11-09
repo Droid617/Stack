@@ -7,21 +7,15 @@
 int main(int argc, char** argv){
 
 	IniFile a(argv[1]);
-	a.Save();
-	std::string c = a.Read("player", "x");
-	std::string cc = a.Read("player", "y");
-	std::cout<<"First"<<c<<"/ second"<<cc<<"/\n";
-	std::string e = "eeeeeeeee";
-	a.Write("player", "y", e);
-	std::string g = a.Read("player", "y");
-	std::cout<<"NEW VALUE IS "<<g<<"\n";
-	if(a.SectionExists("player")){
-		std::cout<<"Section exists\n";
-	}
-	if(!a.KeyExists("player", "oops!")){
-		std::cout<<"This key doesnt exist\n";
-	}
-	
+	auto value = a.Read("player", "x", 0);
+	std::cout<<"The section is 'player', the key is 'x' "
+				"and the value is "<<value<<"\n";
+	std::string change = "666";
+	a.Write("player", "x", change);
+
+	value = a.Read("player", "x", 0);
+        std::cout<<"NOW! The section is 'player', the key is 'x' "
+                                "and the value is "<<value<<"\n";
 	
 	return 0;
 }
