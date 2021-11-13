@@ -81,7 +81,11 @@ template int IniFile::Read<int>(std::string section, std::string key, int defaul
 template float IniFile::Read<float>(std::string section, std::string key, float defaultValue = 0.0f);
 
 template<typename T> void IniFile:: Write(std::string section, std::string key, T value){
-		data[section][key] = value;
+		std::stringstream ss;
+		ss<<value;
+
+		std::string val = ss.str();
+		data[section][key] = val;
 		Save();
 }
 
